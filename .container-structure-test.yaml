@@ -1,0 +1,116 @@
+# container structure test configuration
+
+schemaVersion: '2.0.0'
+
+metadataTest:
+  env:
+    - key: PATH
+      value: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+  entrypoint: []
+  cmd: ["bash"]
+  exposedPorts: []
+  volumes: []
+
+commandTests:
+  - name: "check rsync is found in $PATH"
+    command: "which"
+    args: ["rsync"]
+    expectedOutput: ['/usr/bin/rsync']
+  - name: "check kubectl is found in $PATH"
+    command: "which"
+    args: ["kubectl"]
+    expectedOutput: ['/usr/local/bin/kubectl']
+  - name: "check kubectl version"
+    command: "kubectl"
+    args: ["version", "--client", "--short"]
+    expectedOutput: ['Client Version: v1.10.3']
+  - name: "check helm is found in $PATH"
+    command: "which"
+    args: ["helm"]
+    expectedOutput: ['/usr/local/bin/helm']
+  - name: "check helm version"
+    command: "helm"
+    args: ["version", "--client", "--short"]
+    expectedOutput: ['Client: v2.11.0\+g2e55dbe']
+  - name: "check aws-iam-authenticator is found in $PATH"
+    command: "which"
+    args: ["aws-iam-authenticator"]
+    expectedOutput: ['/usr/local/bin/aws-iam-authenticator']
+  - name: "check aws-iam-authenticator is executable"
+    command: "aws-iam-authenticator"
+    args: ["help"]
+    expectedOutput:
+      - '.*heptio-authenticator-aws.*'
+      - '.*Available Commands.*'
+      - '.*help.*'
+      - '.*init.*'
+      - '.*server.*'
+      - '.*token.*'
+    exitCode: 0
+
+fileExistenceTests:
+  - name: 'FILE check docker-disable-recommends exists'
+    path: '/etc/apt/apt.conf.d/docker-disable-recommends'
+    shouldExist: true
+    permissions: '-rw-r--r--'
+    uid: 0
+    gid: 0
+  - name: 'check /usr/share/man/man1 exists'
+    path: '/usr/share/man/man1'
+    shouldExist: true
+    permissions: 'drwxr-xr-x'
+    uid: 0
+    gid: 0
+  - name: 'check /usr/share/man/man7 exists'
+    path: '/usr/share/man/man1'
+    shouldExist: true
+    permissions: 'drwxr-xr-x'
+    uid: 0
+    gid: 0
+  - name: 'check /usr/bin/rsync exists and executable'
+    path: '/usr/bin/rsync'
+    shouldExist: true
+    permissions: '-rwxr-xr-x'
+    uid: 0
+    gid: 0
+    isExecutableBy: 'any'
+  - name: 'check /usr/local/bin/packer exists and executable'
+    path: '/usr/local/bin/packer'
+    shouldExist: true
+    permissions: '-rwxr-xr-x'
+    uid: 0
+    gid: 0
+    isExecutableBy: 'any'
+  - name: 'check /usr/local/bin/terraform exists and executable'
+    path: '/usr/local/bin/terraform'
+    shouldExist: true
+    permissions: '-rwxr-xr-x'
+    uid: 0
+    gid: 0
+    isExecutableBy: 'any'
+  - name: 'check /usr/local/bin/kubectl exists and executable'
+    path: '/usr/local/bin/kubectl'
+    shouldExist: true
+    permissions: '-rwxr-xr-x'
+    uid: 0
+    gid: 0
+    isExecutableBy: 'any'
+  - name: 'check /usr/local/bin/helm exists and executable'
+    path: '/usr/local/bin/helm'
+    shouldExist: true
+    permissions: '-rwxr-xr-x'
+    uid: 0
+    gid: 0
+    isExecutableBy: 'any'
+  - name: 'check aws-iam-authenticator exists and executable'
+    path: '/usr/local/bin/aws-iam-authenticator'
+    shouldExist: true
+    permissions: '-rwxr-xr-x'
+    uid: 0
+    gid: 0
+    isExecutableBy: 'any'
+
+fileContentTests:
+  - name: 'APT disable install recommends'
+    expectedContents: ['APT::Install-Recommends "false";']
+    path: '/etc/apt/apt.conf.d/docker-disable-recommends'
